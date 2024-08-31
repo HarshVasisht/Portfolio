@@ -25,16 +25,27 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v3
-      - name: Build
+      - name: List files
         run: |
-          # Add build commands here if needed
-          # For example:
-          # npm ci
-          # npm run build
+          echo "Repository contents:"
+          ls -R
+      - name: Check for index.html
+        run: |
+          if [ -f index.html ]; then
+            echo "index.html found"
+          else
+            echo "index.html not found"
+            exit 1
+          fi
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
-          path: '.' # Modify this if your site is in a subdirectory
+          path: '.'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2
+      - name: Deployment result
+        if: always()
+        run: |
+          echo "Deployment status: ${{ steps.deployment.outcome }}"
+          echo "Deployment error: ${{ steps.deployment.outputs.error }}"
