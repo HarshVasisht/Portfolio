@@ -26,6 +26,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
     <link rel="manifest" href="site.webmanifest">
 
+
 </head>
 
 <body id="top" class="ss-preload">
@@ -46,7 +47,7 @@
                     <li class="current"><a class="smoothscroll" href="#hero">Home</a></li>
                     <li><a class="smoothscroll" href="#about">About</a></li>
                     <li><a class="smoothscroll" href="#resume">Resume</a></li>
-<!--                     <li><a class="smoothscroll" href="#portfolio">Works</a></li> -->
+                    <li><a class="smoothscroll" href="#blog">Blog</a></li>
                     <li><a class="smoothscroll" href="#contact">Say Hello</a></li>
                 </ul>
             </nav>
@@ -160,7 +161,7 @@
                         </p>
                     </div>
                     <p>
-                    a)  Performing automated refactoring of outdated Code, using GCP’s Foundation LLM Models such as CodeLlama and Codey.<br> 
+                    a)  Performing automated refactoring of outdated Code, using GCP's Foundation LLM Models such as CodeLlama and Codey.<br> 
                     b)  Achieved Code Convergence of 95% in the Unit Test using the refactored code, by utilizing hybrid prompt techniques.<br> 
                     </p>
                     <div class="resume-block__header">
@@ -246,7 +247,7 @@
                     </div>
 
                     <p>
-                        a) Organized one of North India’s Largest Hackathon ( Tech-A-Thon 3.0 ) with over 900 participants <br>
+                        a) Organized one of North India's Largest Hackathon ( Tech-A-Thon 3.0 ) with over 900 participants <br>
                         b) Mentoring AI/ML and Quantum Machine Learning to students. <br>
                         c) Organize/Manage various Tech events in Campus.<br>
                         d) Latest event organized, ( Quantum Machine Learning ) <br>
@@ -268,7 +269,7 @@
 
                     <p>
     
-                        a) Trained and optimized deep learning models for real-time object and facial recognition using diverse datasets like UTK, LFW, and Google’s dataset. <br>
+                        a) Trained and optimized deep learning models for real-time object and facial recognition using diverse datasets like UTK, LFW, and Google's dataset. <br>
                         b) Enhanced CCTV surveillance using the trained deep learning models for enhanced tracking. <br>
                         
                     </p>
@@ -332,219 +333,226 @@
                 </div>  
             </div>
     </section> 
-<!-- </span>  -->
-    <!-- portfolio -->
-<!--     <section id="portfolio" class="s-portfolio target-section">
-
+    <section id="blog" class="s-portfolio target-section">
+    
         <div class="row s-portfolio__header">
             <div class="column large-12">
                 <h3>A Few Of My Latest Creations</h3>
             </div>
         </div>
 
-        <div class="row collapse block-large-1-4 block-medium-1-3 block-tab-1-2 block-500-stack folio-list">
+        <div class="portfolio-slider-container">
+            <div class="portfolio-slider">
+                <div class="portfolio-card" onclick="openModal('modal-01')">
+                    <a href="#" class="portfolio-card__thumb">
+                        <img src="images/portfolio/droplet.jpg" 
+                             srcset="images/portfolio/droplet.jpg 1x, 
+                                     images/portfolio/droplet@2x.jpg 2x" alt="">
+                    </a>
+                    <h5>Project 1</h5>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                </div>
 
-            <div class="column folio-item">
-                <a href="#modal-01" class="folio-item__thumb">
-                    <img src="images/portfolio/droplet.jpg" 
-                         srcset="images/portfolio/droplet.jpg 1x, 
-                                 images/portfolio/droplet@2x.jpg 2x" alt="">
-                </a>
-            </div> 
+                <div class="portfolio-card" onclick="openModal('modal-02')">
+                    <a href="#" class="portfolio-card__thumb">
+                        <img src="images/portfolio/lamp.jpg" 
+                             srcset="images/portfolio/lamp.jpg 1x, 
+                                     images/portfolio/lamp@2x.jpg 2x" alt="">
+                    </a>
+                    <h5>Project 2</h5>
+                    <p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                </div>
 
-            <div class="column folio-item">
-                <a href="#modal-02" class="folio-item__thumb">
-                    <img src="images/portfolio/lamp.jpg" 
-                         srcset="images/portfolio/lamp.jpg 1x, 
-                                 images/portfolio/lamp@2x.jpg 2x" alt="">
-                </a>
-            </div> 
-            <div class="column folio-item">
-                <a href="#modal-03" class="folio-item__thumb">
-                    <img src="images/portfolio/minimalismo.jpg" 
-                         srcset="images/portfolio/minimalismo.jpg 1x, 
-                                 images/portfolio/minimalismo@2x.jpg 2x" alt="">
-                </a>
-            </div> 
-            <div class="column folio-item">
-                <a href="#modal-04" class="folio-item__thumb">
-                    <img src="images/portfolio/shutterbug.jpg" 
-                         srcset="images/portfolio/shutterbug.jpg 1x, 
-                                 images/portfolio/shutterbug@2x.jpg 2x" alt="">
-                </a>
-            </div> 
+                <div class="portfolio-card" onclick="openModal('modal-03')">
+                    <a href="#" class="portfolio-card__thumb">
+                        <img src="images/portfolio/minimalismo.jpg" 
+                             srcset="images/portfolio/minimalismo.jpg 1x, 
+                                     images/portfolio/minimalismo@2x.jpg 2x" alt="">
+                    </a>
+                    <h5>Project 3</h5>
+                    <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>
+                </div>
 
-            <div class="column folio-item">
-                <a href="#modal-05" class="folio-item__thumb">
-                    <img src="images/portfolio/fuji.jpg" 
-                         srcset="images/portfolio/fuji.jpg 1x, 
-                                 images/portfolio/fuji@2x.jpg 2x" alt="">
-                </a>
-            </div> 
-            <div class="column folio-item">
-                <a href="#modal-06" class="folio-item__thumb">
-                    <img src="images/portfolio/skaterboy.jpg" 
-                         srcset="images/portfolio/skaterboy.jpg 1x, 
-                                 images/portfolio/skaterboy@2x.jpg 2x" alt="">
-                </a>
-            </div> 
+                <div class="portfolio-card" onclick="openModal('modal-04')">
+                    <a href="#" class="portfolio-card__thumb">
+                        <img src="images/portfolio/shutterbug.jpg" 
+                             srcset="images/portfolio/shutterbug.jpg 1x, 
+                                     images/portfolio/shutterbug@2x.jpg 2x" alt="">
+                    </a>
+                    <h5>Project 4</h5>
+                    <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.</p>
+                </div>
 
-            <div class="column folio-item">
-                <a href="#modal-07" class="folio-item__thumb">
-                    <img src="images/portfolio/rucksack.jpg" 
-                         srcset="images/portfolio/rucksack.jpg 1x, 
-                                 images/portfolio/rucksack@2x.jpg 2x" alt="">
-                </a>
-            </div> 
+                <div class="portfolio-card" onclick="openModal('modal-05')">
+                    <a href="#" class="portfolio-card__thumb">
+                        <img src="images/portfolio/fuji.jpg" 
+                             srcset="images/portfolio/fuji.jpg 1x, 
+                                     images/portfolio/fuji@2x.jpg 2x" alt="">
+                    </a>
+                    <h5>Project 5</h5>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                </div>
 
-            <div class="column folio-item">
-                <a href="#modal-08" class="folio-item__thumb">
-                    <img src="images/portfolio/sanddunes.jpg" 
-                         srcset="images/portfolio/sanddunes.jpg 1x, 
-                                 images/portfolio/sanddunes@2x.jpg 2x" alt="">
-                </a>
-            </div> 
+                <div class="portfolio-card" onclick="openModal('modal-06')">
+                    <a href="#" class="portfolio-card__thumb">
+                        <img src="images/portfolio/skaterboy.jpg" 
+                             srcset="images/portfolio/skaterboy.jpg 1x, 
+                                     images/portfolio/skaterboy@2x.jpg 2x" alt="">
+                    </a>
+                    <h5>Project 6</h5>
+                    <p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                </div>
 
-        </div> 
+                <div class="portfolio-card" onclick="openModal('modal-07')">
+                    <a href="#" class="portfolio-card__thumb">
+                        <img src="images/portfolio/rucksack.jpg" 
+                             srcset="images/portfolio/rucksack.jpg 1x, 
+                                     images/portfolio/rucksack@2x.jpg 2x" alt="">
+                    </a>
+                    <h5>Project 7</h5>
+                    <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>
+                </div>
 
+                <div class="portfolio-card" onclick="openModal('modal-08')">
+                    <a href="#" class="portfolio-card__thumb">
+                        <img src="images/portfolio/sanddunes.jpg" 
+                             srcset="images/portfolio/sanddunes.jpg 1x, 
+                                     images/portfolio/sanddunes@2x.jpg 2x" alt="">
+                    </a>
+                    <h5>Project 8</h5>
+                    <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.</p>
+                </div>
+            </div>
+            <button class="slider-nav prev" onclick="moveSlider(-1)">&lt;</button>
+            <button class="slider-nav next" onclick="moveSlider(1)">&gt;</button>
+        </div>
 
-        
-
-        <div id="modal-01" hidden>
-            <div class="modal-popup">
+        <div id="modal-01" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('modal-01')">&times;</span>
                 <img src="images/portfolio/gallery/g-droplet.jpg" alt="" />
-    
-                <div class="modal-popup__desc">
+                <div class="modal-desc">
                     <h5>Project1</h5>
                     <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quia culpa amet qui autem modi expedita iure, eaque explicabo laborum quidem!</p>
-                    <ul class="modal-popup__cat">
-                        <li>Devops</li>
-
-                    </ul>
-                </div>
-    
-                <a href="" class="modal-popup__details">Project link</a>
-            </div>
-        </div> 
-
-        <div id="modal-02" hidden>
-            <div class="modal-popup">
-                <img src="images/portfolio/gallery/g-lamp.jpg" alt="" />
-    
-                <div class="modal-popup__desc">
-                    <h5>Project 2</h5>
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Officia ipsam, hic laboriosam et, explicabo veniam debitis ipsa, quod expedita aperiam dicta beatae saepe iste nam ad quibusdam vel est quisquam?</p>
-                    <ul class="modal-popup__cat">
+                    <ul class="modal-categories">
                         <li>Devops</li>
                     </ul>
+                    <a href="" class="modal-link">Project link</a>
                 </div>
-    
-                <a href="" class="modal-popup__details">Project link</a>
-            </div>
-        </div> 
-
-        <div id="modal-03" hidden>
-            <div class="modal-popup">
-                <img src="images/portfolio/gallery/g-minimalismo.jpg" alt="" />
-    
-                <div class="modal-popup__desc">
-                    <h5>Project3</h5>
-                    <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quos aliquid deleniti tenetur atque at, laborum vitae est perspiciatis maiores dolores excepturi, perferendis dignissimos autem quam quasi minima. Dicta, enim culpa!</p>
-                    <ul class="modal-popup__cat">
-                        <li>Machine Learning</li>
-                    </ul>
-                </div>
-    
-                <a href="https://www.behance.net/" class="modal-popup__details">Project link</a>
-            </div>
-        </div> 
-        <div id="modal-04" hidden>
-            <div class="modal-popup">
-                <img src="images/portfolio/gallery/g-shutterbug.jpg" alt="" />
-    
-                <div class="modal-popup__desc">
-                    <h5>Project4</h5>
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium quaerat consequatur ipsa enim earum officiis animi iste recusandae voluptatum! Incidunt, vero quasi? Porro necessitatibus fuga perspiciatis ipsum odit. Saepe, quas.</p>
-                    <ul class="modal-popup__cat">
-                        <li>Machine Learning</li>
-                    </ul>
-                </div>
-    
-                <a href="https://www.behance.net/" class="modal-popup__details">Project link</a>
             </div>
         </div>
 
-        <div id="modal-05" hidden>
-            <div class="modal-popup">
+        <div id="modal-02" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('modal-02')">&times;</span>
+                <img src="images/portfolio/gallery/g-lamp.jpg" alt="" />
+                <div class="modal-desc">
+                    <h5>Project 2</h5>
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Officia ipsam, hic laboriosam et, explicabo veniam debitis ipsa, quod expedita aperiam dicta beatae saepe iste nam ad quibusdam vel est quisquam?</p>
+                    <ul class="modal-categories">
+                        <li>Devops</li>
+                    </ul>
+                    <a href="" class="modal-link">Project link</a>
+                </div>
+            </div>
+        </div>
 
+        <div id="modal-03" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('modal-03')">&times;</span>
+                <img src="images/portfolio/gallery/g-minimalismo.jpg" alt="" />
+                <div class="modal-desc">
+                    <h5>Project3</h5>
+                    <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quos aliquid deleniti tenetur atque at, laborum vitae est perspiciatis maiores dolores excepturi, perferendis dignissimos autem quam quasi minima. Dicta, enim culpa!</p>
+                    <ul class="modal-categories">
+                        <li>Machine Learning</li>
+                    </ul>
+                    <a href="https://www.behance.net/" class="modal-link">Project link</a>
+                </div>
+            </div>
+        </div>
+
+        <div id="modal-04" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('modal-04')">&times;</span>
+                <img src="images/portfolio/gallery/g-shutterbug.jpg" alt="" />
+                <div class="modal-desc">
+                    <h5>Project4</h5>
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium quaerat consequatur ipsa enim earum officiis animi iste recusandae voluptatum! Incidunt, vero quasi? Porro necessitatibus fuga perspiciatis ipsum odit. Saepe, quas.</p>
+                    <ul class="modal-categories">
+                        <li>Machine Learning</li>
+                    </ul>
+                    <a href="https://www.behance.net/" class="modal-link">Project link</a>
+                </div>
+            </div>
+        </div>
+
+        <div id="modal-05" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('modal-05')">&times;</span>
                 <img src="images/portfolio/gallery/g-fuji.jpg" alt="" />
-    
-                <div class="modal-popup__desc">
+                <div class="modal-desc">
                     <h5>Project5</h5>
                     <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Consequatur, officiis. Rem sunt sed autem praesentium voluptatibus dolores. Sit sint praesentium, et voluptatibus laboriosam doloremque blanditiis sapiente impedit, exercitationem placeat fugit?</p>
-                    <ul class="modal-popup__cat">
+                    <ul class="modal-categories">
                         <li>Machine</li>
                     </ul>
+                    <a href="https://www.behance.net/" class="modal-link">Project link</a>
                 </div>
-    
-                <a href="https://www.behance.net/" class="modal-popup__details">Project link</a>
             </div>
-        </div> 
+        </div>
 
-        <div id="modal-06" hidden>
-            <div class="modal-popup">
+        <div id="modal-06" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('modal-06')">&times;</span>
                 <img src="images/portfolio/gallery/g-skaterboy.jpg" alt="" />
-    
-                <div class="modal-popup__desc">
+                <div class="modal-desc">
                     <h5>Skaterboy</h5>
                     <p>Quisquam vel libero consequuntur autem voluptas. Qui aut vero. Omnis fugit mollitia cupiditate voluptas. Aenean sollicitudin, lorem quis bibendum auctor.</p>
-                    <ul class="modal-popup__cat">
+                    <ul class="modal-categories">
                         <li>Branding</li>
                         <li>Product Design</li>
                     </ul>
+                    <a href="https://www.behance.net/" class="modal-link">Project link</a>
                 </div>
-    
-                <a href="https://www.behance.net/" class="modal-popup__details">Project link</a>
             </div>
-        </div> 
+        </div>
 
-        <div id="modal-07" hidden>
-            <div class="modal-popup">
+        <div id="modal-07" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('modal-07')">&times;</span>
                 <img src="images/portfolio/gallery/g-rucksack.jpg" alt="" />
-    
-                <div class="modal-popup__desc">
+                <div class="modal-desc">
                     <h5>Rucksack</h5>
                     <p>Odio soluta enim quos sit asperiores rerum rerum repudiandae cum. Vel voluptatem alias qui assumenda iure et expedita voluptatem. Ratione officiis quae.</p>
-                    <ul class="modal-popup__cat">
+                    <ul class="modal-categories">
                         <li>Branding</li>
                         <li>Product Design</li>
                     </ul>
+                    <a href="https://www.behance.net/" class="modal-link">Project link</a>
                 </div>
-    
-                <a href="https://www.behance.net/" class="modal-popup__details">Project link</a>
             </div>
-        </div> 
+        </div>
 
-        <div id="modal-08" hidden>
-            <div class="modal-popup">
+        <div id="modal-08" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('modal-08')">&times;</span>
                 <img src="images/portfolio/gallery/g-sanddunes.jpg" alt="" />
-    
-                <div class="modal-popup__desc">
+                <div class="modal-desc">
                     <h5>Sand Dunes</h5>
                     <p>Proin gravida nibh vel velit auctor aliquet. Aenean sollicitudin, lorem quis bibendum auctor, nisi elit consequat ipsum, nec sagittis sem nibh id elit.</p>
-                    <ul class="modal-popup__cat">
+                    <ul class="modal-categories">
                         <li>Web Design</li>
                     </ul>
+                    <a href="https://www.behance.net/" class="modal-link">Project link</a>
                 </div>
-    
-                <a href="https://www.behance.net/" class="modal-popup__details">Project link</a>
             </div>
-        </div> <!-- end modal --> -->
-        <!-- end modal -->
-
+        </div>
 
     </section>
-    <!-- contact -->
+
+
+    <!-- Contact -->
     <section id="contact" class="s-contact target-section">
 
         <div class="row s-contact__header">
@@ -627,6 +635,116 @@
     <script src="js/plugins.js"></script>
     <script src="js/main.js"></script>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const slider = document.querySelector('.portfolio-slider');
+            const cards = document.querySelectorAll('.portfolio-card');
+            const prevBtn = document.querySelector('.slider-nav.prev');
+            const nextBtn = document.querySelector('.slider-nav.next');
+            let currentIndex = 0;
+
+            function updateSlider() {
+                const cardWidth = cards[0].offsetWidth;
+                slider.style.transform = `translateX(-${currentIndex * cardWidth}px)`;
+            }
+
+            function slideNext() {
+                if (currentIndex < cards.length - 1) {
+                    currentIndex++;
+                    updateSlider();
+                }
+            }
+
+            function slidePrev() {
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    updateSlider();
+                }
+            }
+
+            nextBtn.addEventListener('click', slideNext);
+            prevBtn.addEventListener('click', slidePrev);
+
+            // Initial update
+            updateSlider();
+
+            // Update on window resize
+            window.addEventListener('resize', updateSlider);
+
+            // Modal functionality
+            const portfolioCards = document.querySelectorAll('.portfolio-card__thumb');
+            const modals = document.querySelectorAll('[id^="modal-"]');
+            
+            portfolioCards.forEach(card => {
+                card.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const modalId = this.getAttribute('href');
+                    const modal = document.querySelector(modalId);
+                    if (modal) {
+                        modal.style.display = 'block';
+                    }
+                });
+            });
+
+            // Close modal when clicking outside
+            window.addEventListener('click', function(e) {
+                modals.forEach(modal => {
+                    if (e.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            });
+
+            // Add close button to each modal
+            modals.forEach(modal => {
+                const closeBtn = document.createElement('span');
+                closeBtn.innerHTML = '&times;';
+                closeBtn.className = 'modal-close';
+                closeBtn.style.cssText = 'position: absolute; right: 15px; top: 10px; font-size: 30px; cursor: pointer;';
+                closeBtn.onclick = function() {
+                    modal.style.display = 'none';
+                };
+                modal.querySelector('.modal-popup').appendChild(closeBtn);
+            });
+        });
+    </script>
+    <script>
+        let currentIndex = 0;
+        const slider = document.querySelector('.portfolio-slider');
+        const cards = document.querySelectorAll('.portfolio-card');
+        const cardWidth = cards[0].offsetWidth;
+        const totalCards = cards.length;
+
+        function moveSlider(direction) {
+            currentIndex += direction;
+            if (currentIndex < 0) currentIndex = totalCards - 1;
+            if (currentIndex >= totalCards) currentIndex = 0;
+            slider.style.transform = `translateX(-${currentIndex * cardWidth}px)`;
+        }
+    </script>
+    
+<style>
+    [id^="modal-"] {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.4);
+    }
+    .modal-popup {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 600px;
+        position: relative;
+    }
+</style>
 </body>
 
 </html>
