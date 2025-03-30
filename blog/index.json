@@ -1,0 +1,30 @@
+[
+    {
+      "title": "AI Ethics: Important Considerations for Developers",
+      "date": "2024-06-20",
+      "file": "ai-ethics-considerations.md",
+      "excerpt": "This post explores key ethical considerations that every AI developer should keep in mind.",
+      "tags": ["AI", "Ethics", "Research"]
+    },
+    {
+      "title": "Getting Started with AI Development",
+      "date": "2024-06-15",
+      "file": "getting-started-with-ai.md",
+      "excerpt": "A beginner's guide to starting your journey in AI development.",
+      "tags": ["AI", "Machine Learning", "Beginners"]
+    },
+    {
+      "title": "My Experience with LLM Fine-tuning",
+      "date": "2024-06-01",
+      "file": "llm-fine-tuning-experience.md",
+      "excerpt": "Sharing my experience fine-tuning large language models for specific tasks.",
+      "tags": ["LLM", "Fine-tuning", "NLP"]
+    },
+    {
+      "title": "Anatomy of LLMs",
+      "date": "2025-03-30",
+      "file": "Biology-of-llms.md",
+      "excerpt": "Disecting the Black Box, LLM. To trace the Hallucinations",
+      "tags": ["LLM", "Hallucination", "Attention"]
+    }
+  ]

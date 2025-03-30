@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Harsh Vasisht - AI Blog</title>
+    <link rel='icon' href='images/avatars/icon_img.png' />
+    <meta name="description" content="AI and Machine Learning insights, tutorials, and latest news">
+    <meta name="author" content="Harsh Vasisht">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/vendor.css">
+    <link rel="stylesheet" href="css/blog.css">
+    <script defer src="js/vendor/fontawesome/all.min.js"></script>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="manifest" href="site.webmanifest">
+    
+    <!-- Add highlight.js for code syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    
+    <!-- Add marked.js for Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+
+<body id="top" class="ss-preload">
+    <div id="preloader">
+        <div id="loader"></div>
+    </div>
+
+    <header class="s-header">
+        <div class="row s-header__nav-wrap">
+            <nav class="s-header__nav">
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="index.html#about">About</a></li>
+                    <li><a href="index.html#resume">Resume</a></li>
+                    <li class="current"><a href="blog.html">Blog</a></li>
+                    <li><a href="index.html#contact">Say Hello</a></li>
+                </ul>
+            </nav>
+        </div>
+        
+        <a class="s-header__menu-toggle" href="#0" title="Menu">
+            <span class="s-header__menu-icon"></span>
+        </a>
+    </header>
+
+    <!-- Hero Section with AI-themed background -->
+    <section class="blog-hero">
+        <div class="blog-hero__overlay"></div>
+        <div class="blog-hero__content">
+            <h1 class="blog-hero__title">AI Insights & Explorations</h1>
+            <p class="blog-hero__tagline">Exploring the frontiers of artificial intelligence, one post at a time</p>
+            <div class="blog-hero__search">
+                <input type="text" id="blog-search" placeholder="Search articles...">
+                <button id="search-button"><i class="fa fa-search"></i></button>
+            </div>
+        </div>
+    </section>
+
+    <section class="s-blog target-section">
+        <div class="row">
+            <div class="column large-8 tab-12">
+                <h2 class="section-heading">Latest Articles</h2>
+                <!-- Date navigation buttons -->
+                <div id="date-sections">
+                    <h3 class="date-heading" data-section="today-posts">Today <span class="date-badge">New</span></h3>
+                    <h3 class="date-heading" data-section="yesterday-posts">Yesterday</h3>
+                    <h3 class="date-heading" data-section="lastweek-posts">Last Week</h3>
+                    <h3 class="date-heading" data-section="earlier-posts">Earlier</h3>
+                </div>
+                
+                <!-- Date segregation sections -->
+                <div class="date-sections-content">
+                    <!-- Today's posts -->
+                    <div class="date-section" id="today-posts">
+                        <div class="date-posts"></div>
+                    </div>
+                    
+                    <!-- Yesterday's posts -->
+                    <div class="date-section" id="yesterday-posts">
+                        <div class="date-posts"></div>
+                    </div>
+                    
+                    <!-- Last week's posts -->
+                    <div class="date-section" id="lastweek-posts">
+                        <div class="date-posts"></div>
+                    </div>
+                    
+                    <!-- Earlier posts -->
+                    <div class="date-section" id="earlier-posts">
+                        <div class="date-posts"></div>
+                    </div>
+                </div>
+                
+                <!-- Blog post list will be populated here -->
+                <div id="blog-list" class="blog-list">
+                    <!-- Posts will be loaded here -->
+                    <div class="loading-spinner">
+                        <div class="spinner-icon"></div>
+                        <span>Loading the latest in AI...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="column large-4 tab-12">
+                <div class="blog-sidebar">
+                    <div class="blog-sidebar__section">
+                        <h3>Categories</h3>
+                        <ul id="blog-categories">
+                            <li><a href="#" data-category="all" class="active">All Topics</a></li>
+                            <li><a href="#" data-category="AI">Artificial Intelligence</a></li>
+                            <li><a href="#" data-category="ML">Machine Learning</a></li>
+                            <li><a href="#" data-category="NLP">Natural Language Processing</a></li>
+                            <li><a href="#" data-category="LLM">Large Language Models</a></li>
+                        </ul>
+                    </div>
+                    <div class="blog-sidebar__section">
+                        <h3>Featured Post</h3>
+                        <div class="featured-post">
+                            <img src="https://source.unsplash.com/random/800x450/?artificial+intelligence" alt="Featured post image" class="featured-post__image" id="featured-post-image">
+                            <h4>The Future of AI in 2024</h4>
+                            <p>Exploring the most promising AI developments and trends for the coming year.</p>
+                            <a href="#" class="btn btn--small" id="featured-post-link">Read More</a>
+                        </div>
+                    </div>
+                    <div class="blog-sidebar__section">
+                        <h3>Subscribe</h3>
+                        <p>Get the latest AI insights delivered to your inbox</p>
+                        <form class="blog-subscribe">
+                            <input type="email" placeholder="Your email address">
+                            <button type="submit" class="btn btn--primary btn--small">Subscribe</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="blog-post" class="s-blog-post target-section" style="display: none;">
+        <div class="row">
+            <div class="column large-8 tab-12">
+                <a href="#" id="back-to-list" class="btn btn--stroke">← Back to all posts</a>
+                <div id="blog-post-content">
+                    <!-- Individual post content will be loaded here -->
+                </div>
+                <div class="blog-post__share">
+                    <h3>Share this article</h3>
+                    <ul class="blog-post__social">
+                        <li><a href="#"><i class="fab fa-twitter"></i></a></li>
+                        <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
+                        <li><a href="#"><i class="fab fa-linkedin-in"></i></a></li>
+                        <li><a href="#"><i class="fab fa-reddit-alien"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="column large-4 tab-12">
+                <div class="blog-sidebar">
+                    <div class="blog-sidebar__section">
+                        <h3>Related Posts</h3>
+                        <div id="related-posts">
+                            <!-- Related posts will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI News Ticker -->
+    <section class="ai-news-ticker">
+        <div class="ticker-label">AI NEWS</div>
+        <div class="ticker-content">
+            <div class="ticker-items">
+                <span>OpenAI releases GPT-5 with unprecedented reasoning capabilities</span>
+                <span>Google's DeepMind achieves breakthrough in protein folding</span>
+                <span>New research shows AI can predict climate patterns with 95% accuracy</span>
+                <span>MIT develops neural network that requires 70% less energy</span>
+                <span>AI-powered drug discovery leads to potential cancer treatment</span>
+            </div>
+        </div>
+    </section>
+
+    <footer class="s-footer">
+        <div class="row">
+            <div class="column large-4 medium-6 w-1000-stack">
+                <h4>About This Blog</h4>
+                <p>Exploring the cutting edge of AI technology, machine learning innovations, and the future of intelligent systems.</p>
+            </div>
+            <div class="column large-4 medium-6 w-1000-stack">
+                <h4>Quick Links</h4>
+                <ul class="footer-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="index.html#about">About</a></li>
+                    <li><a href="index.html#resume">Resume</a></li>
+                    <li><a href="blog.html">Blog</a></li>
+                    <li><a href="index.html#contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="column large-4 medium-12 w-1000-stack">
+                <h4>Connect</h4>
+                <ul class="footer-social">
+                    <li><a href="https://twitter.com/HarshAI_"><i class="fab fa-twitter"></i></a></li>
+                    <li><a href="https://github.com/HarshVasisht/"><i class="fab fa-github"></i></a></li>
+                    <li><a href="https://www.linkedin.com/in/harshvasisht/"><i class="fab fa-linkedin-in"></i></a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="ss-go-top">
+            <a class="smoothscroll" title="Back to Top" href="#top">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 4h12v2H6zm5 10v6h2v-6h5l-6-6-6 6z"/></svg>
+            </a>
+        </div>
+    </footer>
+
+    <!-- Java Script -->
+    <script src="js/plugins.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/blog.js"></script>
+    
+    <!-- Additional CSS for blog images -->
+    <link rel="stylesheet" href="css/blog-images.css">
+</body>
+</html>
