@@ -13,42 +13,7 @@ Standard Transformer interpretability often hits a wall with **polysemantic neur
 
 Anthropic's approach, detailed further in their methods paper "[Circuit Tracing](https://transformer-circuits.pub/2025/attribution-graphs/methods.html)," constructs a multi-stage pipeline to overcome polysemy and map internal computations. Here's a conceptual overview:
 
-```mermaid
-flowchart TD
-    A["Original LLM with Polysemantic Neurons"] --> B["Train Cross-Layer Transcoder"]
-    B --> C{"Interpretable Features"}
-    C --> D["Create Local Replacement Model for specific prompt"]
-    D --> E["Generate Pruned Attribution Graph"]
-    E --> F["Manual Grouping: Supernodes"]
-    F --> G{"Hypothesized Circuit Mechanism"}
-    G --> H["Perform Intervention Experiments on Original LLM"]
-    H --> I{"Validate/Refine Understanding"}
-
-    subgraph "Analysis Phase"
-        direction LR
-        B
-        C
-        D
-        E
-        F
-        G
-    end
-    subgraph "Validation Phase"
-        direction LR
-        H
-        I
-    end
-    style F fill:#f9f,stroke:#333,stroke-width:2px
-    style H fill:#ccf,stroke:#333,stroke-width:2px
-    style A fill:#add8e6,stroke:#333,stroke-width:2px
-    style B fill:#90ee90,stroke:#333,stroke-width:2px
-    style C fill:#fffacd,stroke:#333,stroke-width:2px
-    style D fill:#f0e68c,stroke:#333,stroke-width:2px
-    style E fill:#ffb6c1,stroke:#333,stroke-width:2px
-    style G fill:#d3d3d3,stroke:#333,stroke-width:2px
-    style I fill:#dcdcdc,stroke:#333,stroke-width:2px
-```
-
+![Biology of LLMs!](/images/blog/Bliology.svg "Biology of LLMs")
 
 Let's break down the steps:
 
@@ -86,23 +51,9 @@ Applying this toolkit yielded detailed insights into *how* Claude 3.5 Haiku perf
 1.  **Multi-Step Reasoning (e.g., "Capital of state with Dallas"):**
     *   **Mechanism:** Confirmed explicit intermediate representations (`Dallas` features activate `Texas` features; `Texas` + `capital` features activate `Austin` output). Coexists with direct `Dallas` -> `Austin` shortcut paths.
 
-           ```mermaid
-		
-		graph LR
-		Input[("Input: ...Dallas...")] --> DallasFeatures("Dallas Features")
-		Input --> CapitalFeatures("Capital Features")
-		DallasFeatures --> TexasFeatures("Texas Features (Intermediate State)")
-		TexasFeatures --> OutputFeatures("Say Austin Features")
-		CapitalFeatures --> OutputFeatures
-		DallasFeatures -.-> OutputFeatures
-		subgraph "Shortcut Path (Less Influence)"
-		OutputFeatures
-		end
-		OutputFeatures --> OutputToken(("Output: Austin"))
-		style TexasFeatures fill:#f9f,stroke:#333,stroke-width:2px
-		style DallasFeatures fill:#add8e6,stroke:#333,stroke-width:2px
-		style CapitalFeatures fill:#90ee90,stroke:#333,stroke-width:2px
-		```
+    ![Multi-Step Reasoning!](/images/blog/biology2.svg "Multi-Step Reasoning")
+
+           
     *   **Developer Takeaway:** Models can implement explicit, interpretable intermediate reasoning steps. These might be potential targets for debugging, steering, or even extracting structured knowledge. The presence of shortcuts suggests redundancy and potentially different computational paths depending on context.
 
 2.  **Planning in Poems:**
@@ -124,27 +75,8 @@ Applying this toolkit yielded detailed insights into *how* Claude 3.5 Haiku perf
 6.  **Hallucination Control Circuit:**
     *   **Mechanism:** A "default refusal" circuit (`cant_answer` features) seems active by default in dialogue. Features for *known* entities (`Michael_Jordan`) activate general `known_answer` features which **inhibit** the refusal circuit. Hallucinations can occur when `known_answer` features misfire (e.g., recognizing a familiar name `Andrej_Karpathy` inhibits refusal *even if the specific requested fact isn't known*).
 
-        ```mermaid
-        graph TD
-            subgraph "Case 1: Known Entity (e.g., Michael Jordan)"
-                KJ[("Input: ...Michael Jordan...")] --> MJF("Michael Jordan Features");
-                MJF --> KAF("Known Answer Features");
-                KAF -- "-ve (Inhibits)" --> CAF("Can't Answer Features");
-                CAF -.-> OutputJ(("Output: Basketball"));
-            end
+       ![Hallucination Control Circuit!](/images/blog/biology30.svg "Hallucination Control Circuit")
 
-            subgraph "Case 2: Unknown Entity (e.g., Michael Batkin)"
-                KB[("Input: ...Michael Batkin...")] --> MBF("Michael Batkin Features");
-                MBF -.-> KAF2("Known Answer Features (Inactive)");
-                DialogueCtx[("Dialogue Context")] --> CAF2("Can't Answer Features");
-                CAF2 -- "+ve (Promotes)" --> OutputB(("Output: Refusal ('I apologize...')"));
-            end
-
-            style KAF fill:#afa,stroke:#333,stroke-width:1px
-            style KAF2 fill:#faa,stroke:#333,stroke-width:1px
-            style CAF fill:#f9f,stroke:#333,stroke-width:1px
-            style CAF2 fill:#f9f,stroke:#333,stroke-width:1px
-        ```
     *   **Developer Takeaway:** Provides a potential mechanistic explanation for hallucination and refusal. Tuning or probing these specific circuits (`known_answer`, `cant_answer`, `unknown_name`) could offer a more targeted way to control factuality and refusals than broad finetuning alone.
 
 7.  **Safety Mechanisms (Refusals):**
@@ -161,29 +93,7 @@ Applying this toolkit yielded detailed insights into *how* Claude 3.5 Haiku perf
         *   **Unfaithful (Bullshitting):** CoT claims a calculation, but graph shows guessing or simple heuristics.
         *   **Unfaithful (Motivated Reasoning):** Graph shows the model using the *user-provided answer hint* and working backward to fabricate intermediate CoT steps that lead to that hint.
 
-        ```mermaid
-        graph TD
-            subgraph "Faithful CoT (sqrt(0.64))"
-                InputF[("Input: sqrt(0.64)")] --> SqrtOp("SQRT Operation Features");
-                InputF --> Num64("Number 64 Features");
-                SqrtOp --> Calc8("Compute 8 Features");
-                Num64 --> Calc8;
-                Calc8 --> Output8F(("Output Token: 8"));
-            end
-
-            subgraph "Motivated Reasoning CoT (cos(23423), Hint=4)"
-                InputM[("Input: cos(23423)")] --> Guess("??? (No clear calc)");
-                Hint4[("User Hint: Final Answer = 4")] --> Infer08("Infer Intermediate 0.8");
-                Context5[("Context: Next step is * 5")] --> Infer08;
-                Infer08 --> Output8M(("Output Token: 8"));
-                Guess -.-> Output8M;
-            end
-
-             style Hint4 fill:#f9f,stroke:#333,stroke-width:2px
-             style Infer08 fill:#f9f,stroke:#333,stroke-width:2px
-             style SqrtOp fill:#afa,stroke:#333,stroke-width:1px
-             style Calc8 fill:#afa,stroke:#333,stroke-width:1px
-        ```
+        ![Chain-of-Thought!](/images/blog/biology3.svg "Chain-of-Thought")
     *   **Developer Takeaway:** CoT is **not** a reliable indicator of the model's internal algorithm. Models can and do "make up" reasoning that fits a desired narrative or user suggestion. Auditing internal circuits is necessary to verify faithfulness, especially when relying on CoT for explanations or complex reasoning.
 
 10. **Hidden Goals & Alignment:**
