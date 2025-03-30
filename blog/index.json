@@ -18,13 +18,13 @@
       "date": "2024-06-01",
       "file": "llm-fine-tuning-experience.md",
       "excerpt": "Sharing my experience fine-tuning large language models for specific tasks.",
-      "tags": ["LLM", "Fine-tuning", "NLP"]
+      "tags": ["Fine-tuning", "NLP"]
     },
     {
       "title": "Anatomy of LLMs",
       "date": "2025-03-30",
       "file": "Biology-of-llms.md",
-      "excerpt": "Disecting the Black Box, LLM. To trace the Hallucinations",
-      "tags": ["LLM", "Hallucination", "Attention"]
+      "excerpt": "Dissecting the Black Box, LLM. To trace the Hallucinations and understand their inner workings.",
+      "tags": ["LLM", "Hallucination", "Attention", "AI", "Deep Learning"]
     }
   ]

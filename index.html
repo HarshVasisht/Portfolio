@@ -18,9 +18,26 @@
     <link rel="stylesheet" href="css/vendor.css">
     <link rel="stylesheet" href="css/blog.css">
 
+    <!-- Add Mermaid CSS (optional but recommended) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.css">
 
     <script defer src="js/vendor/fontawesome/all.min.js"></script>
-
+    
+    <!-- Add Mermaid JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            mermaid.initialize({
+                startOnLoad: true,
+                theme: 'default',
+                securityLevel: 'loose',
+                flowchart: {
+                    useMaxWidth: true,
+                    htmlLabels: true
+                }
+            });
+        });
+    </script>
 
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">

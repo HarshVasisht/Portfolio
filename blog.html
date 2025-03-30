@@ -24,6 +24,59 @@
     
     <!-- Add marked.js for Markdown parsing -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <!-- Add Mermaid.js for diagram rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize mermaid with configuration
+            if (typeof mermaid !== 'undefined') {
+                // Configure Mermaid
+                mermaid.initialize({
+                    startOnLoad: false,  // We'll initialize manually when needed
+                    theme: 'default',
+                    securityLevel: 'loose',
+                    flowchart: {
+                        useMaxWidth: true,
+                        htmlLabels: true,
+                        curve: 'linear'
+                    },
+                    sequence: {
+                        diagramMarginX: 50,
+                        diagramMarginY: 10,
+                        boxMargin: 10
+                    },
+                    er: {
+                        diagramPadding: 20
+                    }
+                });
+                
+                // Add global event listener for Mermaid diagram rendering
+                window.addEventListener('load', function() {
+                    // Just log we're ready - actual rendering happens in blog.js
+                    console.log('Window loaded, Mermaid ready for rendering diagrams');
+                });
+                
+                console.log('Mermaid initialized in blog.html');
+            } else {
+                console.warn('Mermaid library not loaded');
+                // Try to load Mermaid dynamically if not available
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js';
+                script.onload = function() {
+                    console.log('Mermaid loaded dynamically in blog.html');
+                    if (typeof mermaid !== 'undefined') {
+                        mermaid.initialize({
+                            startOnLoad: false,
+                            theme: 'default',
+                            securityLevel: 'loose'
+                        });
+                    }
+                };
+                document.head.appendChild(script);
+            }
+        });
+    </script>
 </head>
 
 <body id="top" class="ss-preload">
@@ -121,7 +174,10 @@
                     <div class="blog-sidebar__section">
                         <h3>Featured Post</h3>
                         <div class="featured-post">
-                            <img src="https://source.unsplash.com/random/800x450/?artificial+intelligence" alt="Featured post image" class="featured-post__image" id="featured-post-image">
+                            <div class="featured-image-container">
+                                <div class="image-placeholder"></div>
+                                <img src="https://source.unsplash.com/random/800x450/?artificial+intelligence" alt="Featured post image" class="featured-post__image" id="featured-post-image" onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
+                            </div>
                             <h4>The Future of AI in 2024</h4>
                             <p>Exploring the most promising AI developments and trends for the coming year.</p>
                             <a href="#" class="btn btn--small" id="featured-post-link">Read More</a>

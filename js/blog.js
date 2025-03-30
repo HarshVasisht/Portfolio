@@ -11,12 +11,37 @@ document.addEventListener('DOMContentLoaded', function() {
         gfm: true
     });
 
+    // Create a custom renderer for marked.js that properly handles Mermaid diagrams
+    const renderer = new marked.Renderer();
+    const originalCodeRenderer = renderer.code.bind(renderer);
+    
+    // Override the code renderer to handle Mermaid diagrams specially
+    renderer.code = function(code, language, isEscaped) {
+        if (language === 'mermaid') {
+            return `<div class="mermaid">${code}</div>`;
+        }
+        return originalCodeRenderer(code, language, isEscaped);
+    };
+    
+    // Apply our custom renderer to marked
+    marked.setOptions({ renderer });
+
     // Unsplash API configuration
     const unsplashAccessKey = '8hutOADHZRPHPZyrcPCEuiERdB452MI071q2A-OgmkU';
     const unsplashApiUrl = 'https://api.unsplash.com';
     
     // Cache for Unsplash images to avoid redundant API calls
     const imageCache = {};
+    
+    // Helper function to preload an image and return a promise
+    function preloadImage(url) {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve(url);
+            img.onerror = () => reject(new Error(`Failed to load image: ${url}`));
+            img.src = url;
+        });
+    }
 
     // Get the blog list and post containers
     const blogList = document.getElementById('blog-list');
@@ -56,25 +81,55 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         try {
-            const response = await fetch(`${unsplashApiUrl}/photos/random?query=${encodeURIComponent(keyword)}&orientation=landscape&client_id=${unsplashAccessKey}`);
+            // Add a timestamp to prevent caching issues
+            const timestamp = new Date().getTime();
+            const response = await fetch(`${unsplashApiUrl}/photos/random?query=${encodeURIComponent(keyword)}&orientation=landscape&client_id=${unsplashAccessKey}&_t=${timestamp}`);
+            
+            // Handle rate limiting (429 Too Many Requests)
+            if (response.status === 429) {
+                console.warn('Unsplash API rate limit reached, using fallback method');
+                const fallbackUrl = `https://source.unsplash.com/random/800x450/?${encodeURIComponent(keyword)}`;
+                imageCache[keyword] = fallbackUrl; // Cache the fallback URL
+                return fallbackUrl;
+            }
             
             if (!response.ok) {
-                console.error('Error fetching from Unsplash API:', response.status);
+                console.error(`Error fetching from Unsplash API: ${response.status} - ${response.statusText}`);
                 // Fallback to the old method if API fails
-                return `https://source.unsplash.com/random/800x450/?${keyword}`;
+                const fallbackUrl = `https://source.unsplash.com/random/800x450/?${encodeURIComponent(keyword)}`;
+                imageCache[keyword] = fallbackUrl; // Cache the fallback URL
+                return fallbackUrl;
             }
             
             const data = await response.json();
+            
+            // Ensure we have image URLs in the response
+            if (!data.urls || !data.urls.regular) {
+                console.error('Unexpected Unsplash API response format', data);
+                const fallbackUrl = `https://source.unsplash.com/random/800x450/?${encodeURIComponent(keyword)}`;
+                imageCache[keyword] = fallbackUrl;
+                return fallbackUrl;
+            }
+            
             const imageUrl = data.urls.regular;
             
             // Cache the result
             imageCache[keyword] = imageUrl;
             
+            // Preload the image before returning the URL
+            try {
+                await preloadImage(imageUrl);
+            } catch (error) {
+                console.warn('Image preloading failed, but continuing with URL:', imageUrl);
+            }
+            
             return imageUrl;
         } catch (error) {
             console.error('Error with Unsplash API:', error);
             // Fallback to the old method if API fails
-            return `https://source.unsplash.com/random/800x450/?${keyword}`;
+            const fallbackUrl = `https://source.unsplash.com/random/800x450/?${encodeURIComponent(keyword)}`;
+            imageCache[keyword] = fallbackUrl;
+            return fallbackUrl;
         }
     }
 
@@ -218,7 +273,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     'Ethics': 'technology ethics',
                     'Future': 'futuristic technology',
                     'LLM': 'large language model',
-                    'Fine-tuning': 'ai training',
+                    'Hallucination': 'ai error visualization',
+                    'Attention': 'neural attention mechanism',
+                    'Fine-tuning': 'ai training model',
                     'GPT': 'chatbot technology'
                 };
                 
@@ -236,34 +293,68 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             } else {
                 // Fallback to general AI-related keywords
-                const aiKeywords = ['artificial intelligence', 'machine learning', 'neural network', 'deep learning', 'ai technology'];
+                const aiKeywords = ['artificial intelligence', 'Deep Learning','machine learning', 'neural network', 'deep learning', 'AI', 'Robot','ai technology'];
                 imageKeyword = aiKeywords[Math.floor(Math.random() * aiKeywords.length)];
             }
             
-            // Fetch image from Unsplash API
-            const imagePath = await fetchUnsplashImage(imageKeyword);
-    
-            const postHtml = `
-                <div class="blog-item">
-                    <div class="blog-item__header">
-                        <img src="${post.image || imagePath}" alt="${post.title}" class="blog-item__image">
-                        <h2 class="blog-item__title">
-                            <a href="#" data-post="${post.file}" class="blog-link">${post.title}</a>
-                        </h2>
-                        <p class="blog-item__date">${date}</p>
+            // Fetch image from Unsplash API - add a timestamp to prevent caching issues
+            try {
+                const imagePath = await fetchUnsplashImage(imageKeyword);
+                
+                const postHtml = `
+                    <div class="blog-item">
+                        <div class="blog-item__header">
+                            <div class="image-container">
+                                <div class="image-placeholder"></div>
+                                <img src="${post.image || imagePath}" alt="${post.title}" class="blog-item__image" onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
+                            </div>
+                            <h2 class="blog-item__title">
+                                <a href="#" data-post="${post.file}" class="blog-link">${post.title}</a>
+                            </h2>
+                            <p class="blog-item__date">${date}</p>
+                        </div>
+                        <div class="blog-item__excerpt">
+                            <p>${post.excerpt}</p>
+                        </div>
+                        <div class="blog-item__tags">
+                            ${post.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                        </div>
+                        <a href="#" data-post="${post.file}" class="btn btn--small blog-link">Read More</a>
                     </div>
-                    <div class="blog-item__excerpt">
-                        <p>${post.excerpt}</p>
+                `;
+                
+                // Append to html
+                html += postHtml;
+            } catch (error) {
+                console.error('Error rendering post:', error);
+                // Use a fallback image for this post
+                const fallbackImage = 'https://source.unsplash.com/random/800x450/?' + encodeURIComponent(imageKeyword);
+                
+                const postHtml = `
+                    <div class="blog-item">
+                        <div class="blog-item__header">
+                            <div class="image-container">
+                                <div class="image-placeholder"></div>
+                                <img src="${post.image || fallbackImage}" alt="${post.title}" class="blog-item__image" onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
+                            </div>
+                            <h2 class="blog-item__title">
+                                <a href="#" data-post="${post.file}" class="blog-link">${post.title}</a>
+                            </h2>
+                            <p class="blog-item__date">${date}</p>
+                        </div>
+                        <div class="blog-item__excerpt">
+                            <p>${post.excerpt}</p>
+                        </div>
+                        <div class="blog-item__tags">
+                            ${post.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                        </div>
+                        <a href="#" data-post="${post.file}" class="btn btn--small blog-link">Read More</a>
                     </div>
-                    <div class="blog-item__tags">
-                        ${post.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
-                    </div>
-                    <a href="#" data-post="${post.file}" class="btn btn--small blog-link">Read More</a>
-                </div>
-            `;
-            
-            // Append to html
-            html += postHtml;
+                `;
+                
+                // Append to html
+                html += postHtml;
+            }
         }));
     
         postsContainer.innerHTML = html;
@@ -279,6 +370,28 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Function to add loaded class to blog post images
+    function processPostImages() {
+        const images = document.querySelectorAll('#blog-post-content img');
+        images.forEach(img => {
+            // For already loaded images
+            if (img.complete) {
+                img.classList.add('loaded');
+            } else {
+                // For images still loading
+                img.addEventListener('load', function() {
+                    this.classList.add('loaded');
+                });
+            }
+            
+            // Add error handling for images
+            img.addEventListener('error', function() {
+                console.warn('Failed to load image:', this.src);
+                this.style.display = 'none';
+            });
+        });
+    }
+
     // Function to load and display a blog post
     async function loadBlogPost(postFile) {
         try {
@@ -288,14 +401,41 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             const markdown = await response.text();
-            const html = marked.parse(markdown);
             
-            // Extract title from the first h1 tag
-            const titleMatch = html.match(/<h1[^>]*>(.*?)<\/h1>/);
+            // Extract title from the markdown content
+            const titleMatch = markdown.match(/^#\s+(.+)$/m);
             const title = titleMatch ? titleMatch[1] : 'Blog Post';
             
             // Update page title
             document.title = `${title} - Harsh Vasisht's Blog`;
+            
+            // Check if we have a mermaid diagram in the content
+            const hasMermaidDiagram = /```mermaid[\s\S]*?```/g.test(markdown);
+            
+            if (hasMermaidDiagram) {
+                console.log('Mermaid diagram detected in markdown content');
+            }
+            
+            // Configure marked options specifically for this render
+            marked.setOptions({
+                highlight: function(code, lang) {
+                    if (lang === 'mermaid') {
+                        // Make sure we clean the code of any potential HTML-breaking characters
+                        return `<div class="mermaid">${code.trim()}</div>`;
+                    }
+                    if (lang && hljs.getLanguage(lang)) {
+                        return hljs.highlight(code, {language: lang}).value;
+                    }
+                    return hljs.highlightAuto(code).value;
+                },
+                breaks: true,
+                gfm: true,
+                headerIds: true,
+                mangle: false
+            });
+            
+            // Parse markdown to HTML
+            const html = marked.parse(markdown);
             
             // Display the post content
             blogPostContent.innerHTML = html;
@@ -308,14 +448,142 @@ document.addEventListener('DOMContentLoaded', function() {
             // Scroll to top
             window.scrollTo(0, 0);
             
+            // Process images in the blog post
+            processPostImages();
+            
             // Initialize syntax highlighting for code blocks
             document.querySelectorAll('pre code').forEach((block) => {
-                // Use the newer highlight() method instead of deprecated highlightBlock()
-                hljs.highlightElement(block);
+                if (!block.parentNode.previousElementSibling && 
+                    !block.parentNode.previousElementSibling?.classList?.contains('mermaid')) {
+                    // Use the newer highlight() method instead of deprecated highlightBlock()
+                    hljs.highlightElement(block);
+                }
             });
-    
+            
+            // If we have mermaid diagrams, make sure they are properly rendered
+            if (hasMermaidDiagram) {
+                // Try to clean up mermaid diagrams
+                document.querySelectorAll('.mermaid').forEach((diagram, index) => {
+                    // Add ID if missing
+                    if (!diagram.id) diagram.id = `mermaid-diagram-${index}`;
+                    
+                    // Remove any pre/code wrappers that might interfere
+                    if (diagram.parentElement && diagram.parentElement.tagName === 'PRE') {
+                        const parent = diagram.parentElement;
+                        const grandparent = parent.parentElement;
+                        grandparent.insertBefore(diagram, parent);
+                        parent.remove();
+                    }
+                    
+                    // Make sure content is clean
+                    const diagramContent = diagram.textContent.trim();
+                    if (diagramContent) {
+                        diagram.setAttribute('data-content', diagramContent);
+                    }
+                });
+            }
+            
+            // Initialize Mermaid diagrams with a longer delay and more robust error handling
+            setTimeout(() => {
+                try {
+                    if (typeof mermaid !== 'undefined') {
+                        console.log('Initializing Mermaid diagrams...');
+                        
+                        // Make sure Mermaid is properly configured
+                        mermaid.initialize({
+                            startOnLoad: false,
+                            theme: 'default',
+                            securityLevel: 'loose',
+                            flowchart: {
+                                useMaxWidth: true,
+                                htmlLabels: true,
+                                curve: 'linear'
+                            }
+                        });
+                        
+                        // Force clear any previous diagrams
+                        const diagrams = document.querySelectorAll('.mermaid');
+                        console.log(`Found ${diagrams.length} Mermaid diagrams to render`);
+                        
+                        // Process each diagram individually
+                        diagrams.forEach((diagram, index) => {
+                            try {
+                                console.log(`Rendering diagram #${index}: ${diagram.id || 'unnamed'}`);
+                                
+                                // Clean up any existing SVG to prevent duplicates
+                                const existingSvg = diagram.querySelector('svg');
+                                if (existingSvg) existingSvg.remove();
+                                
+                                // Add a loading indicator
+                                diagram.classList.add('mermaid-loading');
+                                
+                                // Log the content for debugging
+                                const content = diagram.textContent.trim() || diagram.getAttribute('data-content');
+                                console.log(`Diagram content length: ${content ? content.length : 0} characters`);
+                                if (!content || content.length < 5) {
+                                    console.warn('Diagram has no content!', diagram);
+                                }
+                            } catch (e) {
+                                console.error(`Error preparing diagram #${index}:`, e);
+                            }
+                        });
+                        
+                        // Run Mermaid rendering
+                        mermaid.run({
+                            querySelector: '.mermaid'
+                        }).then(() => {
+                            console.log('Mermaid diagrams rendered successfully');
+                            diagrams.forEach(diagram => {
+                                diagram.classList.remove('mermaid-loading');
+                                diagram.classList.add('mermaid-rendered');
+                            });
+                        }).catch(error => {
+                            console.error('Error running Mermaid:', error);
+                            console.log('Trying alternative rendering method...');
+                            
+                            // Try an alternative rendering method as fallback
+                            try {
+                                mermaid.init(undefined, diagrams);
+                                console.log('Alternative rendering completed');
+                                diagrams.forEach(diagram => {
+                                    diagram.classList.remove('mermaid-loading');
+                                    diagram.classList.add('mermaid-rendered-alt');
+                                });
+                            } catch (secondError) {
+                                console.error('Alternative rendering also failed:', secondError);
+                                diagrams.forEach(diagram => {
+                                    diagram.classList.remove('mermaid-loading');
+                                    diagram.classList.add('mermaid-error');
+                                    diagram.setAttribute('title', 'Failed to render diagram');
+                                });
+                            }
+                        });
+                    } else {
+                        console.warn('Mermaid.js not loaded - adding script dynamically');
+                        // Try to load Mermaid dynamically if not available
+                        const script = document.createElement('script');
+                        script.src = 'https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js';
+                        script.onload = function() {
+                            console.log('Mermaid loaded dynamically, initializing...');
+                            if (typeof mermaid !== 'undefined') {
+                                mermaid.initialize({
+                                    startOnLoad: false,
+                                    theme: 'default',
+                                    securityLevel: 'loose'
+                                });
+                                mermaid.run();
+                            }
+                        };
+                        document.head.appendChild(script);
+                    }
+                } catch (mermaidError) {
+                    console.error('Error initializing Mermaid diagrams:', mermaidError);
+                }
+            }, 1000); // Increased delay further to ensure DOM is ready
+            
             // Load related posts
             loadRelatedPosts(postFile);
+            
         } catch (error) {
             console.error('Error loading blog post:', error);
             if (blogPostContent) {
@@ -354,8 +622,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         let html = '';
         relatedPostsList.forEach(post => {
-            html += `
-                <div class="related-post">
+            html += `                <div class="related-post">
                     <h4><a href="#" data-post="${post.file}" class="blog-link">${post.title}</a></h4>
                     <p>${post.excerpt.substring(0, 100)}...</p>
                 </div>
@@ -465,11 +732,18 @@ document.addEventListener('DOMContentLoaded', function() {
     async function updateFeaturedPostImage() {
         const featuredPostImage = document.getElementById('featured-post-image');
         const featuredPostLink = document.getElementById('featured-post-link');
+        const imagePlaceholder = featuredPostImage.previousElementSibling;
         
         if (featuredPostImage) {
             try {
+                // Ensure placeholder is visible during loading
+                imagePlaceholder.style.display = 'block';
+                featuredPostImage.classList.remove('loaded');
+                
                 // Fetch a curated featured image for AI
                 const featuredImageUrl = await fetchUnsplashImage('futuristic artificial intelligence');
+                
+                // Set the image and let the onload handler handle showing it
                 featuredPostImage.src = featuredImageUrl;
                 
                 // If we have posts, link to the first/newest one
@@ -486,6 +760,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             } catch (error) {
                 console.error('Error updating featured post image:', error);
+                // Use fallback image
+                featuredPostImage.src = "https://source.unsplash.com/random/800x450/?artificial+intelligence";
+                // Let the onload handler handle the rest
             }
         }
     }
@@ -524,4 +801,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize the ticker
     initTicker();
+
+    // Initialize marked.js with default options
+    // Remove the marked.use that might be conflicting with our marked.setOptions in loadBlogPost
+    if (typeof mermaid !== 'undefined') {
+        mermaid.initialize({
+            startOnLoad: false, // We'll manually initialize when needed
+            theme: 'default',
+            securityLevel: 'loose',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'linear'
+            }
+        });
+        console.log('Mermaid initialized on page load with startOnLoad: false');
+    }
 });
