@@ -1,5 +1,19 @@
 [
     {
+      "title": "A Comprehensive Guide to Retrieval-Augmented Generation (RAG)",
+      "date": "2025-07-3",
+      "file": "comprehensive-guide-to-rag.md",
+      "excerpt": "A deep dive into Retrieval-Augmented Generation (RAG), from the foundational 'Retrieve-Read' pipeline to advanced paradigms like multi-hop, self-correcting, and multi-agent RAG.",
+      "tags": ["RAG", "LLM", "AI", "Generative AI", "Architecture"]
+    },
+    {
+      "title": "Anatomy of LLMs",
+      "date": "2025-03-30",
+      "file": "Biology-of-llms.md",
+      "excerpt": "Dissecting the Black Box, LLM. To trace the Hallucinations and understand their inner workings.",
+      "tags": ["LLM", "Hallucination", "Attention", "AI", "Deep Learning"]
+    },
+    {
       "title": "AI Ethics: Important Considerations for Developers",
       "date": "2024-06-20",
       "file": "ai-ethics-considerations.md",
@@ -19,12 +33,5 @@
       "file": "llm-fine-tuning-experience.md",
       "excerpt": "Sharing my experience fine-tuning large language models for specific tasks.",
       "tags": ["Fine-tuning", "NLP"]
-    },
-    {
-      "title": "Anatomy of LLMs",
-      "date": "2025-03-30",
-      "file": "Biology-of-llms.md",
-      "excerpt": "Dissecting the Black Box, LLM. To trace the Hallucinations and understand their inner workings.",
-      "tags": ["LLM", "Hallucination", "Attention", "AI", "Deep Learning"]
     }
   ]
