@@ -1,0 +1,37 @@
+name: Auto-Update Knowledge Graph
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'knowledge_hub/**'
+      - 'js/ereader.js'
+
+jobs:
+  build-graph:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          
+      - name: Run Graph Builder
+        run: python knowledge_hub/build_graph.py
+        
+      - name: Commit and Push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add js/graph_data.js
+          git commit -m "Auto-update Knowledge Graph [skip ci]" || echo "No changes to commit"
+          git push

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classified Archive - Login</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: 'Share Tech Mono', monospace;
+            background: url('https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            color: #0f0;
+        }
+
+        .hud-container {
+            position: relative;
+            width: 400px;
+            padding: 40px;
+            background: rgba(0, 20, 0, 0.5);
+            border: 2px solid #0f0;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5), inset 0 0 15px rgba(0, 255, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 10;
+        }
+
+        /* Crosshairs for corners */
+        .hud-container::before,
+        .hud-container::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #0f0;
+        }
+
+        .hud-container::before {
+            top: -2px;
+            left: -2px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .hud-container::after {
+            bottom: -2px;
+            right: -2px;
+            border-left: none;
+            border-top: none;
+        }
+
+        .hud-corner-tl {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #0f0;
+            border-left: none;
+            border-bottom: none;
+        }
+
+        .hud-corner-bl {
+            position: absolute;
+            bottom: -2px;
+            left: -2px;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #0f0;
+            border-right: none;
+            border-top: none;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 5px #0f0;
+            text-transform: uppercase;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 50, 0, 0.4);
+            border: 1px solid #0f0;
+            color: #0f0;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 16px;
+            box-sizing: border-box;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+            background: rgba(0, 80, 0, 0.6);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: transparent;
+            border: 2px solid #0f0;
+            color: #0f0;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        /* Active typing state - button lights up red */
+        .login-btn.active-typing {
+            border-color: #ff0000;
+            color: #ff0000;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.8), inset 0 0 10px rgba(255, 0, 0, 0.4);
+        }
+
+        /* Hover effect - HUD target */
+        .login-btn:hover {
+            background: rgba(255, 0, 0, 0.2);
+            border-color: #ff0000;
+            color: #ff0000;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 1);
+        }
+
+        .login-btn:hover::before,
+        .login-btn:hover::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border: 2px solid #ff0000;
+        }
+
+        .login-btn:hover::before {
+            top: 2px;
+            left: 2px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .login-btn:hover::after {
+            bottom: 2px;
+            right: 2px;
+            border-left: none;
+            border-top: none;
+        }
+
+        .error-msg {
+            color: #ff0000;
+            text-align: center;
+            margin-top: 15px;
+            height: 20px;
+            font-size: 14px;
+            text-shadow: 0 0 5px #ff0000;
+        }
+
+        /* Scanline effect */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.1) 50%, rgba(0, 0, 0, 0.1));
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .back-link {
+            position: absolute;
+            bottom: 20px;
+            color: #0f0;
+            text-decoration: none;
+            font-size: 14px;
+            opacity: 0.6;
+            transition: opacity 0.3s;
+        }
+
+        .back-link:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="scanlines"></div>
+    <a href="index.html" class="back-link">
+        < ABORT MISSION</a>
+            <div class="hud-container">
+                <div class="hud-corner-tl"></div>
+                <div class="hud-corner-bl"></div>
+                <h1>Knowledge Hub Archives</h1>
+
+                <div class="form-group">
+                    <label>Callsign</label>
+                    <input type="text" id="username" autocomplete="off" spellcheck="false">
+                </div>
+
+                <div class="form-group">
+                    <label>Access Code</label>
+                    <input type="password" id="password" autocomplete="off">
+                </div>
+
+                <button class="login-btn" id="loginBtn">Engage</button>
+                <div class="error-msg" id="errorMsg"></div>
+            </div>
+
+            <script>
+                const userIn = document.getElementById('username');
+                const passIn = document.getElementById('password');
+                const btn = document.getElementById('loginBtn');
+                const errorMsg = document.getElementById('errorMsg');
+
+                function checkTyping() {
+                    if (userIn.value.length > 0 || passIn.value.length > 0) {
+                        btn.classList.add('active-typing');
+                        btn.innerText = 'TARGET ACQUIRED - ENGAGE';
+                    } else {
+                        btn.classList.remove('active-typing');
+                        btn.innerText = 'Engage';
+                    }
+                }
+
+                userIn.addEventListener('input', checkTyping);
+                passIn.addEventListener('input', checkTyping);
+
+                btn.addEventListener('click', () => {
+                    if (userIn.value.toLowerCase() === 'maverick' && passIn.value.toLowerCase() === 'iceman') {
+                        document.body.style.animation = "flash 0.5s forwards";
+                        setTimeout(() => {
+                            window.location.href = 'ereader.html';
+                        }, 500);
+                    } else {
+                        errorMsg.innerText = "ACCESS DENIED. TARGET LOST.";
+                        setTimeout(() => { errorMsg.innerText = ""; }, 2000);
+                    }
+                });
+
+                // Flash animation for successful login
+                const style = document.createElement('style');
+                style.innerHTML = `
+            @keyframes flash {
+                0% { background-color: rgba(255,255,255,0); }
+                50% { background-color: rgba(255,255,255,1); }
+                100% { background-color: rgba(0,0,0,1); }
+            }
+        `;
+                document.head.appendChild(style);
+            </script>
+</body>
+
+</html>

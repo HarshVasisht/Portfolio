@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archive DB - Workspace</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Marked.js for markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Force Graph -->
+    <script src="https://unpkg.com/force-graph"></script>
+    <script src="js/graph_data.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        appbase: '#09090b', // zinc-950
+                        panel: '#18181b', // zinc-900
+                        panelhover: '#27272a', // zinc-800
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Apple-inspired scrollbar hiding but keeping functionality */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3f3f46;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #52525b;
+        }
+        
+        /* Smooth transitions for panels */
+        .layout-transition {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Wiki-link styling */
+        .wiki-link {
+            color: #38bdf8;
+            background-color: rgba(56, 189, 248, 0.1);
+            padding: 2px 6px;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+        .wiki-link:hover {
+            background-color: rgba(56, 189, 248, 0.2);
+        }
+
+        /* Markdown Rendering Styles */
+        #readerContent h1 { font-size: 2.25rem; font-weight: 700; color: #f4f4f5; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem; }
+        #readerContent h2 { font-size: 1.5rem; font-weight: 600; color: #e4e4e7; margin-top: 2rem; margin-bottom: 1rem; }
+        #readerContent h3 { font-size: 1.25rem; font-weight: 500; color: #d4d4d8; margin-top: 1.5rem; margin-bottom: 0.75rem; }
+        #readerContent p { margin-bottom: 1.25rem; }
+        #readerContent a { color: #38bdf8; text-decoration: none; transition: color 0.2s; }
+        #readerContent a:hover { color: #7dd3fc; }
+        #readerContent ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1.25rem; color: #a1a1aa; }
+        #readerContent ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 1.25rem; color: #a1a1aa; }
+        #readerContent li { margin-bottom: 0.5rem; }
+        #readerContent code { background: rgba(0,0,0,0.3); padding: 0.2rem 0.4rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.875em; }
+        #readerContent pre { background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; overflow-x: auto; margin-bottom: 1.25rem; border: 1px solid rgba(255,255,255,0.05); }
+        #readerContent blockquote { border-left: 4px solid #38bdf8; padding-left: 1rem; color: #a1a1aa; font-style: italic; margin-bottom: 1.25rem; }
+
+        /* Flashcard Styles */
+        .flashcard {
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1.5rem 0;
+            background: rgba(0,0,0,0.2);
+            position: relative;
+        }
+        .flashcard-q {
+            font-weight: 600;
+            color: #f4f4f5;
+            margin-bottom: 1rem;
+        }
+        .flashcard-a {
+            color: #d4d4d8;
+            filter: blur(5px);
+            transition: filter 0.3s ease;
+            cursor: pointer;
+            user-select: none;
+        }
+        .flashcard-a.revealed {
+            filter: blur(0);
+            cursor: default;
+            user-select: auto;
+        }
+        .flashcard-actions {
+            display: none;
+            margin-top: 1rem;
+            gap: 0.5rem;
+        }
+        .flashcard-a.revealed + .flashcard-actions {
+            display: flex;
+        }
+        .flashcard-status {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 0.75rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* Graph Modal */
+        #graphModal {
+            position: fixed;
+            inset: 0;
+            background: rgba(9, 9, 11, 0.95);
+            z-index: 50;
+            display: none;
+            flex-direction: column;
+        }
+        
+        /* Scroll Progress */
+        #scrollProgress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 2px;
+            background: #38bdf8;
+            width: 0%;
+            z-index: 20;
+            transition: width 0.1s ease;
+        }
+    </style>
+</head>
+<body class="bg-appbase text-zinc-300 font-sans h-screen w-screen overflow-hidden flex flex-col antialiased">
+
+    <header class="h-14 border-b border-white/5 flex items-center justify-between px-4 shrink-0 bg-appbase/80 backdrop-blur-md z-10">
+        <div class="flex items-center gap-3">
+            <button id="toggle-sidebar" class="p-2 hover:bg-white/10 rounded-lg text-zinc-400 hover:text-zinc-100 transition-colors" title="Toggle Sidebar (Cmd+B)">
+                <i class="ph ph-sidebar-simple text-xl"></i>
+            </button>
+            <h1 class="font-semibold tracking-wide text-zinc-100 flex items-center gap-2">
+                <i class="ph-fill ph-database text-sky-500"></i>
+                ARCHIVE DB
+            </h1>
+        </div>
+        
+        <div class="flex items-center gap-3 text-sm">
+            <button id="toggle-graph" class="flex items-center gap-2 text-zinc-400 hover:text-sky-400 transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5">
+                <i class="ph ph-graph text-lg"></i>
+                Knowledge Graph
+            </button>
+            <a href="index.html" class="flex items-center gap-2 text-zinc-400 hover:text-zinc-100 transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5 border-l border-white/10 pl-4 ml-2">
+                <i class="ph ph-arrow-left text-lg"></i>
+                Return to Base
+            </a>
+        </div>
+    </header>
+
+    <div class="flex h-[calc(100vh-3.5rem)] w-full layout-transition relative" id="main-layout">
+        
+        <aside id="sidebar" class="w-72 border-r border-white/5 bg-panel flex flex-col shrink-0 layout-transition overflow-y-auto">
+            <div class="p-3">
+                <div class="relative mb-4">
+                    <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500"></i>
+                    <input type="text" id="searchInput" placeholder="Search library..." class="w-full bg-black/20 border border-white/10 rounded-lg pl-9 pr-3 py-2 text-sm focus:outline-none focus:border-sky-500/50 text-zinc-200 placeholder-zinc-500 transition-colors">
+                </div>
+
+                <div class="space-y-1" id="bookList">
+                    <!-- Dynamic Books List Injected Here -->
+                </div>
+            </div>
+        </aside>
+
+        <main class="flex-1 flex layout-transition w-full bg-appbase" id="reading-main">
+            
+            <!-- Left Pane: Source Document -->
+            <section class="flex-1 border-r border-white/5 flex flex-col h-full overflow-hidden min-w-[300px] relative" id="source-pane">
+                <div id="scrollProgress"></div>
+                <!-- Document Toolbar -->
+                <div class="h-12 border-b border-white/5 flex items-center justify-between px-6 shrink-0 bg-panel/50">
+                    <div class="flex items-center gap-2">
+                        <button id="toggle-zen" class="p-1.5 hover:bg-white/10 rounded text-zinc-400 hover:text-zinc-100 transition-colors" title="Zen Mode (Hide Notes & Sidebar)">
+                            <i class="ph ph-corners-out"></i>
+                        </button>
+                        <span class="text-xs font-mono text-zinc-500 ml-2" id="currentDocLabel">Source Document</span>
+                        <span class="text-xs text-sky-400/80 ml-2" id="readingTimeLabel"></span>
+                    </div>
+                    <div class="flex items-center gap-2" id="readerToolbar" style="display: none;">
+                        <select id="statusSelect" onchange="changeStatus(this.value)" class="bg-black/30 border border-white/10 rounded px-2 py-1 text-xs text-zinc-300 focus:outline-none cursor-pointer">
+                            <option value="To Read">To Read</option>
+                            <option value="Reading">Reading</option>
+                            <option value="Read">Completed</option>
+                        </select>
+                        <button id="favoriteBtn" onclick="toggleFavorite()" class="p-1.5 hover:bg-white/10 rounded text-zinc-400 hover:text-yellow-400 transition-colors">
+                            <i class="ph-fill ph-star" id="favIcon"></i>
+                        </button>
+                        <button id="toggle-notes" class="p-1.5 hover:bg-white/10 rounded text-zinc-400 hover:text-zinc-100 transition-colors ml-2 border-l border-white/10 pl-3" title="Toggle Notes Pane">
+                            <i class="ph ph-pencil-simple"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Document Content -->
+                <div class="p-8 md:p-12 overflow-y-auto h-full text-zinc-300 leading-relaxed max-w-4xl mx-auto w-full" id="readerContent">
+                    <div class="flex items-center justify-center h-full text-zinc-600 font-mono">
+                        SELECT A RECORD TO COMMENCE UPLINK...
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Pane: Markdown Notes / Scratchpad -->
+            <section id="notes-pane" class="flex-1 flex flex-col h-full bg-[#0a0a0c] min-w-[300px] layout-transition max-w-lg border-l border-white/5">
+                <!-- Notes Toolbar -->
+                <div class="h-12 border-b border-white/5 flex items-center justify-between px-6 shrink-0 bg-panel/30">
+                    <div class="flex items-center gap-2">
+                        <i class="ph ph-pencil-simple text-zinc-500"></i>
+                        <span class="text-xs font-mono text-zinc-500">Contextual Notes</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button id="toggleNotesModeBtn" class="text-xs px-3 py-1 rounded bg-white/5 hover:bg-white/10 transition-colors text-zinc-300 border border-white/10">
+                            Preview
+                        </button>
+                        <button id="copyNotesBtn" class="text-xs px-3 py-1 rounded bg-sky-900/40 hover:bg-sky-800/60 text-sky-400 transition-colors ml-2">
+                            Copy
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Notes Content -->
+                <div class="p-6 overflow-y-auto h-full font-sans text-sm md:text-base text-zinc-300 flex flex-col relative">
+                    <p class="text-zinc-500 italic mb-4 text-sm shrink-0">Notes linked to: <span class="text-sky-400 not-italic" id="notesFileLabel">None</span></p>
+
+                    <div class="flex-1 flex flex-col mt-2 relative">
+                        <textarea id="notesArea" placeholder="Write your notes here... (Saved automatically)&#10;Use [[Title]] to link.&#10;Use :::flashcard Question? | Answer ::: for recall." class="w-full h-full min-h-[300px] bg-transparent border-none resize-none focus:ring-0 focus:outline-none text-zinc-300 placeholder-zinc-700 font-sans leading-relaxed"></textarea>
+                        <div id="notesPreview" class="w-full h-full absolute inset-0 bg-[#0a0a0c] overflow-y-auto hidden pb-10" style="margin-top: 0;"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Graph Modal -->
+    <div id="graphModal">
+        <header class="h-14 border-b border-white/5 flex items-center justify-between px-6 shrink-0 bg-appbase/80 backdrop-blur-md">
+            <h2 class="font-semibold tracking-wide text-zinc-100 flex items-center gap-2">
+                <i class="ph-fill ph-graph text-sky-500"></i>
+                KNOWLEDGE GRAPH
+            </h2>
+            <button id="closeGraphBtn" class="text-zinc-400 hover:text-white">
+                <i class="ph ph-x text-xl"></i>
+            </button>
+        </header>
+        <div id="graphContainer" class="flex-1 w-full h-full relative"></div>
+    </div>
+
+    <script src="js/ereader.js"></script>
+</body>
+</html>
