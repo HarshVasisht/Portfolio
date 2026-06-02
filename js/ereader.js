@@ -804,27 +804,85 @@ document.addEventListener('DOMContentLoaded', () => {
     let graphRendered = false;
 
     if (toggleGraph) {
-        toggleGraph.addEventListener('click', () => {
+        toggleGraph.addEventListener('click', async () => {
             graphModal.style.display = 'flex';
-            if (!graphRendered && typeof ForceGraph !== 'undefined' && typeof graphData !== 'undefined') {
-                const Graph = ForceGraph()
-                (document.getElementById('graphContainer'))
-                    .graphData(graphData)
-                    .nodeId('id')
-                    .nodeLabel('name')
-                    .nodeColor(node => currentBookId === node.id ? '#38bdf8' : '#6366f1')
-                    .linkColor(() => '#3f3f46')
-                    .backgroundColor('#09090b')
-                    .onNodeClick(node => {
-                        const book = books.find(b => b.id === node.id);
-                        if (book) {
-                            graphModal.style.display = 'none';
-                            currentBookId = book.id;
-                            renderBookList();
-                            loadBook(book);
+            if (!graphRendered && typeof ForceGraph !== 'undefined') {
+                const loading = document.getElementById('graphLoading');
+                if(loading) loading.classList.remove('hidden');
+                
+                try {
+                    const nodes = books.map(b => ({ id: b.id, name: b.title, val: 1 }));
+                    const links = [];
+                    const titleToId = {};
+                    books.forEach(b => titleToId[b.title.toLowerCase()] = b.id);
+                    
+                    const fetchPromises = books.map(async (b) => {
+                        if (b.type !== 'md') return;
+                        try {
+                            const response = await fetch(b.file);
+                            const content = await response.text();
+                            const matches = content.match(/\[\[(.*?)\]\]/g) || [];
+                            matches.forEach(m => {
+                                const title = m.replace(/\[\[|\]\]/g, '').toLowerCase().trim();
+                                const targetId = titleToId[title];
+                                if (targetId) links.push({ source: b.id, target: targetId });
+                            });
+                        } catch(e) { console.error('Failed to fetch', b.file); }
+                    });
+                    
+                    // Incorporate local notes
+                    const savedData = getSavedData();
+                    Object.keys(savedData).forEach(bookId => {
+                        if (savedData[bookId].notes) {
+                            const matches = savedData[bookId].notes.match(/\[\[(.*?)\]\]/g) || [];
+                            matches.forEach(m => {
+                                const title = m.replace(/\[\[|\]\]/g, '').toLowerCase().trim();
+                                const targetId = titleToId[title];
+                                if (targetId) links.push({ source: parseInt(bookId), target: targetId });
+                            });
                         }
                     });
-                graphRendered = true;
+
+                    await Promise.all(fetchPromises);
+                    
+                    if(loading) loading.classList.add('hidden');
+                    
+                    const graphData = { nodes, links };
+                    const container = document.getElementById('graphContainer');
+                    const Graph = ForceGraph()
+                        (container)
+                        .width(container.clientWidth || window.innerWidth)
+                        .height(container.clientHeight || (window.innerHeight - 56))
+                        .graphData(graphData)
+                        .nodeId('id')
+                        .nodeLabel('name')
+                        .nodeColor(node => currentBookId === node.id ? '#38bdf8' : '#6366f1')
+                        .linkColor(() => '#3f3f46')
+                        .backgroundColor('#09090b')
+                        .onNodeClick(node => {
+                            const book = books.find(b => b.id === node.id);
+                            if (book) {
+                                graphModal.style.display = 'none';
+                                currentBookId = book.id;
+                                renderBookList(document.getElementById('searchInput')?.value || '');
+                                loadBook(book);
+                            }
+                        });
+                    
+                    // Handle window resize
+                    window.addEventListener('resize', () => {
+                        Graph.width(container.clientWidth || window.innerWidth);
+                        Graph.height(container.clientHeight || (window.innerHeight - 56));
+                    });
+                    
+                    graphRendered = true;
+                } catch(e) {
+                    console.error("Failed to build graph", e);
+                    if(loading) {
+                        loading.classList.remove('hidden');
+                        loading.innerText = "ERROR BUILDING GRAPH: " + e.message;
+                    }
+                }
             }
         });
     }
